@@ -55,6 +55,7 @@
   <header>
     <h1>Generate Vouchers</h1>
     <div class="actions">
+      <a href="/admin/redeemed" class="link">Used Vouchers →</a>
       <a href="/scan" class="link">Open Scanner →</a>
       <button class="ghost" on:click={logout}>Log out</button>
     </div>
