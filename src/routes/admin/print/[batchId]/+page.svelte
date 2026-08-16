@@ -38,6 +38,10 @@
             <div><div class="k">Valid Until</div><div class="val">{c.expiry}</div></div>
             <div><div class="k">Serial</div><div class="val">{c.code}</div></div>
           </div>
+          <div class="store">
+            <div>Mannar Road, Pattanicoor, Vavuniya</div>
+            <div>077 263 6129</div>
+          </div>
         </div>
         <div class="right">
           <div class="qrbox"><img src={c.qr} alt="QR" /></div>
@@ -93,6 +97,7 @@
   .qrbox { background: #fff; padding: 2.5mm; border-radius: 2mm; border: 0.5mm solid #d4af37; }
   .qrbox img { display: block; width: 32mm; height: 32mm; }
   .scan { font-size: 2.4mm; letter-spacing: 2px; color: #d4af37; text-transform: uppercase; }
+  .store { font-size: 2.6mm; color: #d4af37; letter-spacing: 1px; line-height: 1.4; }
 
   @media print {
     :global(html),
