@@ -3,6 +3,7 @@ import QRCode from 'qrcode';
 import type { PageServerLoad } from './$types';
 import { supabase, type Voucher } from '$lib/server/supabase';
 import { signToken } from '$lib/server/codes';
+import { getShopSettings } from '$lib/server/shop';
 import { VERIFY_BASE } from '$env/static/private';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -35,5 +36,5 @@ export const load: PageServerLoad = async ({ params }) => {
     })
   );
 
-  return { batch, cards };
+  return { batch, cards, settings: await getShopSettings() };
 };

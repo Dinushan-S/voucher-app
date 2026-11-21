@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  export let data;
   let passcode = '';
   let error = '';
   let busy = false;
@@ -24,7 +25,7 @@
 
 <div class="wrap">
   <form class="box card-dark" on:submit|preventDefault={submit}>
-    <h1>Modern Furniture</h1>
+    <h1>{data.settings.shop_name}</h1>
     <p>Voucher System</p>
     <input
       type="password"
