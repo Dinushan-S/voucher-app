@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { formatLKR } from '$lib/format';
+  export let data;
 
   interface Row { amount: number | null; count: number | null; }
 
@@ -46,8 +47,59 @@
   }
 
   async function logout() {
-    await fetch('/api/v1/auth/logout', { method: 'POST' });
-    goto('/login');
+    await fetch('/api/v1/logout', { method: 'POST' });
+    location.href = '/login';
+  }
+
+  let sName = data.settings?.shop_name ?? '';
+  let sAddress = data.settings?.address ?? '';
+  let sPhone = data.settings?.phone ?? '';
+  let sLogo = data.settings?.logo_data_url ?? '';
+  let savingSettings = false;
+  let settingsMsg = '';
+
+  function onLogoPick(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    if (file.size > 200 * 1024) {
+      settingsMsg = 'Logo must be under 200KB';
+      input.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      sLogo = reader.result as string;
+      settingsMsg = '';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function saveSettings() {
+    savingSettings = true;
+    try {
+      const res = await fetch('/api/v1/settings', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          shop_name: sName,
+          address: sAddress,
+          phone: sPhone,
+          logo_data_url: sLogo || null
+        })
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j?.error ?? 'Failed to save settings');
+      sName = j.shop_name ?? '';
+      sAddress = j.address ?? '';
+      sPhone = j.phone ?? '';
+      sLogo = j.logo_data_url ?? '';
+      settingsMsg = 'Saved';
+    } catch (err) {
+      settingsMsg = err instanceof Error ? err.message : 'Failed to save settings';
+    } finally {
+      savingSettings = false;
+    }
   }
 </script>
 
@@ -90,6 +142,34 @@
       {busy ? 'Generating…' : 'Generate & Print'}
     </button>
   </div>
+
+  <div class="card-dark panel settings">
+    <h2>Shop Settings</h2>
+    <label class="field">
+      <span>Shop name</span>
+      <input type="text" maxlength="100" bind:value={sName} />
+    </label>
+    <label class="field">
+      <span>Address</span>
+      <input type="text" maxlength="300" bind:value={sAddress} />
+    </label>
+    <label class="field">
+      <span>Phone</span>
+      <input type="text" maxlength="50" bind:value={sPhone} />
+    </label>
+    <label class="field">
+      <span>Logo (PNG/JPG, max 200KB)</span>
+      <input type="file" accept="image/png,image/jpeg" on:change={onLogoPick} />
+    </label>
+    {#if sLogo}
+      <img class="logo-preview" src={sLogo} alt="Logo preview" />
+      <button class="ghost" on:click={() => (sLogo = '')}>Remove logo</button>
+    {/if}
+    {#if settingsMsg}<div class="err">{settingsMsg}</div>{/if}
+    <button class="btn-gold gen" on:click={saveSettings} disabled={savingSettings}>
+      {savingSettings ? 'Saving…' : 'Save settings'}
+    </button>
+  </div>
 </div>
 
 <style>
@@ -117,5 +197,8 @@
   .totals span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; }
   .totals strong { font-size: 18px; }
   .gen { width: 100%; }
-  .err { color: #ff7b7b; font-size: 13px; margin-bottom: 12px; }
+  .settings { margin-top: 24px; }
+  .settings h2 { margin: 0 0 16px; font-size: 18px; }
+	.err { color: #ff7b7b; font-size: 13px; margin-bottom: 12px; }
+	.logo-preview { max-width: 120px; max-height: 60px; margin-bottom: 12px; display: block; }
 </style>

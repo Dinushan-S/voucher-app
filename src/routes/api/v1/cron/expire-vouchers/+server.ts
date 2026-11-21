@@ -7,11 +7,9 @@ import { supabase } from '$lib/server/supabase';
 export const GET: RequestHandler = async ({ request }) => {
   // Vercel sends: Authorization: Bearer <CRON_SECRET> when CRON_SECRET is set.
   const secret = env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get('authorization');
-    if (auth !== `Bearer ${secret}`) {
-      return json({ error: 'unauthorized' }, { status: 401 });
-    }
+  // Fail closed: if CRON_SECRET is unset, nobody gets in.
+  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return json({ error: 'unauthorized' }, { status: 401 });
   }
 
   const today = new Date().toISOString().slice(0, 10);

@@ -24,9 +24,9 @@
       <div class="card">
         <div class="left">
           <div class="head">
-            <img class="logo" src="/logo.png" alt="Modern Furniture" />
+            <img class="logo" src={data.settings.logo_data_url ?? '/logo.png'} alt={data.settings.shop_name} />
             <div>
-              <div class="bname">MODERN FURNITURE</div>
+              <div class="bname">{data.settings.shop_name}</div>
               <div class="bsub">Gift Voucher</div>
             </div>
           </div>
@@ -39,8 +39,8 @@
             <div><div class="k">Serial</div><div class="val">{c.code}</div></div>
           </div>
           <div class="store">
-            <div>Mannar Road, Pattanicoor, Vavuniya</div>
-            <div>077 263 6129</div>
+            <div>{data.settings.address}</div>
+            <div>{data.settings.phone}</div>
           </div>
         </div>
         <div class="right">
